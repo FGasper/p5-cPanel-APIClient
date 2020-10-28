@@ -51,6 +51,8 @@ our $_PORT = 2083;
 Calls a single UAPI call. %ARGS values should be simple scalars or arrays
 thereof.
 
+Check L<cPanel’s documentation|https://documentation.cpanel.net/display/DD/Guide+to+UAPI> for descriptions of each available UAPI call.
+
 The return value depends on I<OBJ>’s configured transport:
 
 =over
@@ -74,17 +76,56 @@ to indicate the API call response.
 sub call_uapi {
     my ( $self, $module, $func, $args_hr, $metaargs_hr ) = @_;
 
-    die "Meta-arguments are not implemented!" if $metaargs_hr;
-
     require cPanel::APIClient::Request::UAPI;
-    my $req = cPanel::APIClient::Request::UAPI->new( $module, $func, $args_hr, $metaargs_hr );
-
-    return $self->{'transporter'}->request( $self, $req );
+    return $self->_call(
+        'cPanel::APIClient::Request::UAPI',
+        [ $module, $func, $args_hr, $metaargs_hr ],
+    );
 }
+
+#----------------------------------------------------------------------
+
+=head2 $whatsit = I<OBJ>->call_api2( $MODULE, $FUNC, \%ARGS, \%METAARGS )
+
+Like C<call_uapi()> but calls API 2 instead of UAPI. The eventual response
+is a L<cPanel::APIClient::Response::cPanel2> instance.
+
+Check L<cPanel’s documentation|https://documentation.cpanel.net/display/DD/Guide+to+cPanel+API+2> for descriptions of each available API 2 call.
+
+B<NOTE:> cPanel’s API 2 is deprecated. Some API 2 functionality is
+also available via UAPI. For such cases, prefer UAPI.
+
+=cut
+
+sub call_api2 {
+    my ( $self, $module, $func, $args_hr, $metaargs_hr ) = @_;
+
+    require cPanel::APIClient::Request::cPanel2;
+    return $self->_call(
+        'cPanel::APIClient::Request::cPanel2',
+        [ $module, $func, $args_hr, $metaargs_hr ],
+    );
+}
+
+#----------------------------------------------------------------------
 
 # undocumented for now
 sub get_https_port {
     return $_PORT;
+}
+
+#----------------------------------------------------------------------
+
+sub _call {
+    my ( $self, $reqclass, $reqargs_ar ) = @_;
+
+    my $metaargs_hr = $reqargs_ar->[-1];
+
+    die "Meta-arguments are not implemented!" if $metaargs_hr;
+
+    my $req = $reqclass->new(@$reqargs_ar);
+
+    return $self->{'transporter'}->request( $self, $req );
 }
 
 =head1 LICENSE

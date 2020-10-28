@@ -20,6 +20,7 @@ use parent (
     'TestHTTPBase',
     'TestHTTPTinyMixin',
     'TestHTTPUAPIMixin',
+    'TestHTTPcPanel2Mixin',
 );
 
 use Test::FailWarnings;

@@ -20,6 +20,7 @@ use parent (
     'TestHTTPBase',
     'TestHTTPUAPIMixin',
     'TestHTTPWHM1Mixin',
+    'TestHTTPcPanel2Mixin',
 );
 
 use Test::More;

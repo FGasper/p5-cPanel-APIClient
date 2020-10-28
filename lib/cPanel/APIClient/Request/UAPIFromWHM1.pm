@@ -15,14 +15,14 @@ use parent qw( cPanel::APIClient::Request::WHM1 );
 use cPanel::APIClient::Utils::JSON    ();
 use cPanel::APIClient::Response::UAPI ();
 
-sub HTTP_RESPONSE_CLASS { return 'cPanel::APIClient::Response::UAPI' }
+sub _RESPONSE_CLASS { return 'cPanel::APIClient::Response::UAPI' }
 
 sub new {
-    my ($class, $cpusername, $module, $fn, $args_hr, $metaargs_hr) = @_;
+    my ( $class, $cpusername, $module, $fn, $args_hr, $metaargs_hr ) = @_;
 
-    die 'Need username!' if !defined $cpusername || !length $cpusername;
-    die 'Need module!' if !defined $module || !length $module;
-    die 'Need function name!' if !defined $fn || !length $fn;
+    die 'Need username!'      if !defined $cpusername || !length $cpusername;
+    die 'Need module!'        if !defined $module     || !length $module;
+    die 'Need function name!' if !defined $fn         || !length $fn;
 
     my %args = (
         cpanel_jsonapi_apiversion => 3,
@@ -35,7 +35,7 @@ sub new {
     return $class->SUPER::new( 'cpanel', \%args, $metaargs_hr );
 }
 
-sub _EXTRACT_RESPONSE {
+sub _extract_http_response {
 
     # Ordinarily our response looks thus:
     #
@@ -82,11 +82,11 @@ sub _EXTRACT_RESPONSE {
     #   "error": "User parameter is invalid or was not supplied"
     # }
 
-    die cPanel::APIClient::X->create('API', $_[1]->{'error'}) if $_[1]->{'error'};
+    die cPanel::APIClient::X->create( 'API', $_[1]->{'error'} ) if $_[1]->{'error'};
 
     # This shouldn’t happen …
     require Data::Dumper;
-    die "$_[0]: Received invalid payload: " . Data::Dumper::Dumper($_[1]);
+    die "$_[0]: Received invalid payload: " . Data::Dumper::Dumper( $_[1] );
 }
 
 1;

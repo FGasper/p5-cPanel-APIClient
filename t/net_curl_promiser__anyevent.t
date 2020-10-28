@@ -20,6 +20,7 @@ use parent (
     'TestHTTPBase',
     'TestHTTPUAPIMixin',
     'TestHTTPWHM1Mixin',
+    'TestHTTPcPanel2Mixin',
 );
 
 use Test::More;
@@ -43,7 +44,7 @@ use constant _CP_REQUIRE => (
             diag "Using Net::Curl $Net::Curl::VERSION";
             diag "Using Net::Curl::Promiser $Net::Curl::Promiser::VERSION";
             diag "Using AnyEvent $AnyEvent::VERSION";
-        },
+        };
     },
 );
 
@@ -77,7 +78,7 @@ sub test_uapi_cancel : Tests(1) {
     local $cPanel::APIClient::DEBUG = 1;
 
   SKIP: {
-        my $version = $Net::Curl::Promiser::VERSION;
+        my $version     = $Net::Curl::Promiser::VERSION;
         my $min_version = 0.12;
         if ( $version < $min_version ) {
             skip "This test requires Net::Curl::Promiser $min_version or newer.", $self->num_tests();
@@ -123,8 +124,8 @@ sub test_uapi_cancel : Tests(1) {
 
         {
             my $sub_p = $main_p->then(
-                sub { $fate = [0, shift()] },
-                sub { $fate = [1, shift()] },
+                sub { $fate = [ 0, shift() ] },
+                sub { $fate = [ 1, shift() ] },
             );
         }
 
@@ -134,13 +135,13 @@ sub test_uapi_cancel : Tests(1) {
             skip 'We already finished what we were about to cancel.', 1;
         }
 
-        $remote_cp->cancel( $pending );
+        $remote_cp->cancel($pending);
 
         my $cv2 = AnyEvent->condvar();
 
         my $timeout = AnyEvent->timer(
             after => 1,
-            cb => $cv2,
+            cb    => $cv2,
         );
 
         $cv2->recv();

@@ -10,12 +10,27 @@ package cPanel::APIClient::Request::WHM1;
 use strict;
 use warnings;
 
-use parent qw( cPanel::APIClient::Request::HTTPBase );
+use parent (
+    'cPanel::APIClient::Request::HTTPBase',
+    'cPanel::APIClient::Request::CLIBase',
+);
 
 use cPanel::APIClient::Utils::JSON    ();
 use cPanel::APIClient::Response::WHM1 ();
 
-sub HTTP_RESPONSE_CLASS { return 'cPanel::APIClient::Response::WHM1' }
+sub _RESPONSE_CLASS { return 'cPanel::APIClient::Response::WHM1' }
+
+sub _parse_new_args {
+    my ( $class, $args_ar ) = @_;
+
+    my ( $func, $args_hr, $metaargs_hr ) = @$args_ar;
+
+    return (
+        [$func],
+        $args_hr,
+        $metaargs_hr,
+    );
+}
 
 sub new {
     my ( $class, $func, $args_hr, $metaargs_hr ) = @_;
@@ -35,37 +50,29 @@ sub get_http_url_path {
     return "/json-api/$self->[0]";
 }
 
-sub get_http_payload {
+sub _get_form_hr {
     my ($self) = @_;
 
-    local $self->[1]{'api.version'} = 1;
-
-    require cPanel::APIClient::Utils::HTTPRequest;
-    return cPanel::APIClient::Utils::HTTPRequest::encode_form( $self->[1] );
+    return {
+        ( $self->[1] ? %{ $self->[1] } : () ),
+        'api.version' => 1,
+    };
 }
 
 #----------------------------------------------------------------------
 
-sub get_cli_command {
-    my ( $self, $authn ) = @_;
+sub _get_cli_pieces {
+    my ($self) = @_;
 
-    my $username = $authn && $authn->username();
-
-    require cPanel::APIClient::Utils::CLIRequest;
     return (
         '/usr/local/cpanel/bin/whmapi1',
-        '--output=json',
-        ( $username ? "--user=$username" : () ),
-        $self->[0],
-        cPanel::APIClient::Utils::CLIRequest::to_args( $self->[1] ),
+        [ $self->[0] ],
+        $self->[1],
     );
 }
 
-sub parse_cli_response {
-    my ( $self, $resp_body ) = @_;
-
-    my $resp_struct = cPanel::APIClient::Utils::JSON::decode($resp_body);
-    return $self->HTTP_RESPONSE_CLASS()->new($resp_struct);
+sub _extract_cli_response {
+    return $_[1];
 }
 
 #----------------------------------------------------------------------

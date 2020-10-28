@@ -19,6 +19,38 @@ use JSON           ();
 sub _get_response {
     my ( $self, $req ) = @_;
 
+    my $uri = $req->uri()->as_string();
+
+    my %resp;
+
+    if ( $uri =~ m</execute/> ) {
+        %resp = $self->_get_uapi_response($req);
+    }
+    elsif ( $uri =~ m</json-api/cpanel> ) {
+        %resp = $self->_get_api2_response($req);
+    }
+    else {
+        return HTTP::Response->new(
+            404, 'Not Found',
+            [
+                'Content-Type' => 'text/plain',
+            ],
+            "Bad URL: $uri",
+        );
+    }
+
+    return HTTP::Response->new(
+        200, 'OK',
+        [
+            'Content-Type' => 'application/json',
+        ],
+        JSON::encode_json( \%resp ),
+    );
+}
+
+sub _get_uapi_response {
+    my ( $self, $req ) = @_;
+
     my ( $status, %metadata, @errors, @warnings, @messages );
 
     my $uri = $req->uri()->as_string();
@@ -37,29 +69,45 @@ sub _get_response {
         push @messages, 'message1', 'message2';
     }
 
-    my %resp = (
+    return (
         status   => $status,
         metadata => \%metadata,
         errors   => \@errors,
         warnings => \@warnings,
         messages => \@messages,
-        data     => {
-            method  => $req->method(),
-            uri     => $req->uri()->as_string(),
-            headers => [ $req->flatten() ],
-            content => $req->content(),
-        },
+        data     => _faux_data($req),
+    );
+}
+
+sub _get_api2_response {
+    my ( $self, $req ) = @_;
+
+    my ( $status, %metadata, @errors, @warnings, @messages );
+
+    my $uri = $req->uri()->as_string();
+
+    my %cpresult = (
+        data => _faux_data($req),
     );
 
-    my $resp = HTTP::Response->new(
-        200, 'OK',
-        [
-            'Content-Type' => 'application/json',
-        ],
-        JSON::encode_json( \%resp ),
-    );
+    if ( $req->content() =~ m<fail> ) {
+        $cpresult{'error'} = "failed: " . $req->content();
+    }
 
-    return $resp;
+    return (
+        cpanelresult => \%cpresult,
+    );
+}
+
+sub _faux_data {
+    my ($req) = @_;
+
+    return {
+        method  => $req->method(),
+        uri     => $req->uri()->as_string(),
+        headers => [ $req->flatten() ],
+        content => $req->content(),
+    };
 }
 
 1;

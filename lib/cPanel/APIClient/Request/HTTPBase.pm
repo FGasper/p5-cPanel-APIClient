@@ -10,6 +10,8 @@ package cPanel::APIClient::Request::HTTPBase;
 use strict;
 use warnings;
 
+use parent 'cPanel::APIClient::Request';
+
 use cPanel::APIClient::Utils::JSON ();
 use cPanel::APIClient::X           ();
 
@@ -21,6 +23,16 @@ sub get_http_headers {
     return [ 'Content-Type' => 'application/x-www-form-urlencoded' ];
 }
 
+sub get_http_payload {
+    my ($self) = @_;
+
+    my $formdata = $self->_get_form_hr();
+
+    local ( $@, $! );
+    require cPanel::APIClient::Utils::HTTPRequest;
+    return cPanel::APIClient::Utils::HTTPRequest::encode_form($formdata);
+}
+
 sub parse_http_response {
     my ( $self, $resp_obj, $resp_body ) = @_;
 
@@ -30,8 +42,8 @@ sub parse_http_response {
 
     my $resp_struct = cPanel::APIClient::Utils::JSON::decode($resp_body);
 
-    return $self->HTTP_RESPONSE_CLASS()->new(
-        $self->_EXTRACT_RESPONSE($resp_struct),
+    return $self->_RESPONSE_CLASS()->new(
+        $self->_extract_http_response($resp_struct),
     );
 }
 
@@ -41,7 +53,8 @@ sub create_transport_error {
     die cPanel::APIClient::X->create( 'SubTransport', $description );
 }
 
-sub _EXTRACT_RESPONSE {
+# default implementation
+sub _extract_http_response {
     return $_[1];
 }
 
