@@ -121,6 +121,10 @@ sub code {
     return $_[0]{'status'};
 }
 
+sub content {
+    return $_[0]{'content'};
+}
+
 sub header {
     my ( $self, $name ) = @_;
 
@@ -136,6 +140,7 @@ sub as_string {
         "\x0d\x0a",
         join( q< >, grep { defined } @{$self}{ 'protocol', 'status', 'reason' } ),
         ( map { "$_: " . ( defined $hdrs->{$_} ? $hdrs->{$_} : q<> ) } keys %$hdrs ),
+        $self->{'content'},
     );
 }
 

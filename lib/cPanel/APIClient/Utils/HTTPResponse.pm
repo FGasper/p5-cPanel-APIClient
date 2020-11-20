@@ -26,6 +26,12 @@ sub code {
     return $self->[0];
 }
 
+sub content {
+    my ($self) = @_;
+
+    return $self->[2];
+}
+
 sub as_string {
     my ($self) = @_;
 
@@ -41,7 +47,7 @@ sub header {
     my @lines = split m<\x0d?\x0a>, $self->[1];
 
     for my $line (@lines) {
-        my ( $thisname, $value ) = split m<\s*:\s*>, $line;
+        my ( $thisname, $value ) = split m<\s*:\s*>, $line, 2;
         $thisname =~ tr<A-Z><a-z>;
 
         if ( $name eq $thisname ) {

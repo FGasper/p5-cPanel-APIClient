@@ -93,12 +93,14 @@ mechanism class’s constructor.
     out-of-the-box.
     - [cPanel::APIClient::Transport::MojoUserAgent](https://metacpan.org/pod/cPanel::APIClient::Transport::MojoUserAgent) (`MojoUserAgent`) -
     Asynchronous HTTP requests via [Mojo::UserAgent](https://metacpan.org/pod/Mojo::UserAgent) (pure Perl).
+    - [cPanel::APIClient::Transport::AnyEventHTTP](https://metacpan.org/pod/cPanel::APIClient::Transport::AnyEventHTTP) (`AnyEventHTTP`) -
+    Asynchronous HTTP requests via [AnyEvent::HTTP](https://metacpan.org/pod/AnyEvent::HTTP) (pure Perl).
 
     Which of the above to use will depend on your needs. If your application
     is local to the cPanel & WHM server you might find it easiest to use
     `CLISync`. For HTTP `NetCurlPromiser` offers the best flexibility
-    and (probably) speed, whereas `MojoUserAgent` and `HTTPSync` can run in
-    pure Perl (assuming you have [Net::SSLeay](https://metacpan.org/pod/Net::SSLeay)).
+    and (probably) speed, whereas `MojoUserAgent`, `AnyEventHTTP`, and
+    `HTTPSync` can run in pure Perl (assuming you have [Net::SSLeay](https://metacpan.org/pod/Net::SSLeay)).
 
     There currently is no documentation for how to create a 3rd-party transport
     mechanism (e.g., if you want to use a different HTTP library). Submissions

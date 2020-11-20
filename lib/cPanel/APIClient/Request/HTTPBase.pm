@@ -22,13 +22,15 @@ sub get_http_headers {
 }
 
 sub parse_http_response {
-    my ( $self, $resp_obj, $resp_body ) = @_;
+    my ( $self, $resp_obj ) = @_;
 
     if ( $resp_obj->code() !~ m<\A2> ) {
-        die cPanel::APIClient::X->create( 'HTTP', $resp_obj->as_string() . $/ . $resp_body );
+        die cPanel::APIClient::X->create( 'HTTP', $resp_obj->as_string() );
     }
 
-    my $resp_struct = cPanel::APIClient::Utils::JSON::decode($resp_body);
+    my $content = $resp_obj->content();
+
+    my $resp_struct = cPanel::APIClient::Utils::JSON::decode($content);
 
     return $self->HTTP_RESPONSE_CLASS()->new(
         $self->_EXTRACT_RESPONSE($resp_struct),

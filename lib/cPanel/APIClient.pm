@@ -125,13 +125,16 @@ out-of-the-box.
 =item * L<cPanel::APIClient::Transport::MojoUserAgent> (C<MojoUserAgent>) -
 Asynchronous HTTP requests via L<Mojo::UserAgent> (pure Perl).
 
+=item * L<cPanel::APIClient::Transport::AnyEventHTTP> (C<AnyEventHTTP>) -
+Asynchronous HTTP requests via L<AnyEvent::HTTP> (pure Perl).
+
 =back
 
 Which of the above to use will depend on your needs. If your application
 is local to the cPanel & WHM server you might find it easiest to use
 C<CLISync>. For HTTP C<NetCurlPromiser> offers the best flexibility
-and (probably) speed, whereas C<MojoUserAgent> and C<HTTPSync> can run in
-pure Perl (assuming you have L<Net::SSLeay>).
+and (probably) speed, whereas C<MojoUserAgent>, C<AnyEventHTTP>, and
+C<HTTPSync> can run in pure Perl (assuming you have L<Net::SSLeay>).
 
 There currently is no documentation for how to create a 3rd-party transport
 mechanism (e.g., if you want to use a different HTTP library). Submissions

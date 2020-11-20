@@ -50,6 +50,9 @@ L<cPanel::APIClient::Transport::NetCurlPromiser> can also integrate
 with L<Mojolicious> but requires L<Net::Curl>, which you’ll need C compiler
 access to install.
 
+L<cPanel::APIClient::Transport::AnyEventHTTP> implements an identical
+interface to this module but for L<AnyEvent::HTTP>.
+
 =cut
 
 #----------------------------------------------------------------------

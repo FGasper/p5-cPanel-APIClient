@@ -155,12 +155,15 @@ sub _get_session_promise {
     my ( $self, $service_obj ) = @_;
 
     return $self->{'_session_promise'} ||= $self->_needs_session() && do {
-        my ( $method, $url, $payload ) = $self->{'authn'}->get_login_request_pieces();
+        my $authn = $self->{'authn'};
+
+        my ( $method, $url, $payload ) = $authn->get_login_request_pieces();
         substr( $url, 0, 0, $self->_get_url_base($service_obj) );
 
         my $session_easy = $self->_create_easy( $method, $url, $payload );
 
         $self->{'_session_easy'} = $session_easy;
+
 
         $self->{'promiser'}->add_handle($session_easy)->then(
             sub {
@@ -173,7 +176,7 @@ sub _get_session_promise {
                     $easy->{'head'},
                 );
 
-                $self->{'authn'}->consume_session_response($resp_obj);
+                $authn->consume_session_response($resp_obj);
             }
         );
     };

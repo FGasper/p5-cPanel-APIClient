@@ -28,6 +28,7 @@ lib/cPanel/APIClient/Service.pm
 lib/cPanel/APIClient/Service/cpanel.pm
 lib/cPanel/APIClient/Service/whm.pm
 lib/cPanel/APIClient/Transport.pm
+lib/cPanel/APIClient/Transport/AnyEventHTTP.pm
 lib/cPanel/APIClient/Transport/CLISync.pm
 lib/cPanel/APIClient/Transport/HTTPSync.pm
 lib/cPanel/APIClient/Transport/MojoUserAgent.pm
@@ -46,6 +47,7 @@ lib/cPanel/APIClient/X/Base.pm
 lib/cPanel/APIClient/X/CommandFailed.pm
 lib/cPanel/APIClient/X/HTTP.pm
 lib/cPanel/APIClient/X/SubTransport.pm
+t/anyeventhttp.t
 t/cPanel-APIClient-Request-WHM1.t
 t/http_sync.t
 t/http_sync_tls_verify_by_default.t
