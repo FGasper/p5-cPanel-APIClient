@@ -47,7 +47,7 @@ jobs:
       - name: Install Dependencies
         run: cpanm --notest --installdeps .
       - name: Install Optionals
-        run: cpanm --notest Net::Curl::Promiser AnyEvent IO::Async IPC::Run
+        run: cpanm --notest Net::Curl::Promiser AnyEvent AnyEvent::HTTP IO::Async IPC::Run
       - name: Install Version-Dependent Optionals
         run: 'cpanm --notest Mojolicious ||:'
       - name: perl Makefile.PL
